@@ -3,12 +3,14 @@ import random
 min_rand = 5
 max_rand = 10
 
+
 class Board:
     bio = "A fresh new world"
     board_floor = "_"
     board_obstacle = "#"
     board_hero = "&"
     board_chest = "$"
+
     def __init__(self, height, width, board={}):
         self.height = height
         self.width = width
@@ -50,7 +52,8 @@ class Board:
 
 
 class Item:
-    bio = "Anything, realy anything you can interact with"
+    bio = "Anything, really anything you can interact with"
+
     def __init__(self, name, attack, defence, durability=100):
         self.name = name
         self.attack = attack
@@ -70,9 +73,9 @@ def generate_board():
     cur_board.place_chest()
     show_board()
 
+
 def show_board():
     cur_board.show_board()
-
 
 
 def main():
