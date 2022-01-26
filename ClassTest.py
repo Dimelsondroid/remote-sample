@@ -1,9 +1,12 @@
+
 import random
 import time
 
-hero_names = ["Jack", "Lana", "Peter", "Mary", "Robert"]
+hero_names = ["Jack", "Lassia", "Peter", "Mary", "Robert", "Garry", "Kirill",
+                "Yes, you!"]
 hero_types = ["Pirate", "Archer", "Berserk"]
-enemy_names = ["Босоножко", "Обидулька", "Подсранко", "Золупышка", "Лопоушко"]
+enemy_names = ["Босоножко", "Обидулька", "Подсранко", "Золупышка", "Лопоушко",
+                "Рукожопко", "Ленивко", "Зеленушко", "Сопливко", "Мяско"]
 
 
 class Wallet:
@@ -73,7 +76,7 @@ class Zombie(Creature):
 
 
 def console_clr():
-    print("\n"*20)
+    print("\n"*50)
 
 
 def rand_i(a, b):
@@ -85,6 +88,7 @@ def rand_r(a, b):
 
 
 def recreate_characters():
+    pocket.upgrades_count = 1
     create_hero()
     create_enemy(0)
 
@@ -101,13 +105,15 @@ def create_wallet():
                         int(loaded[3]),
                         int(loaded[4]),
                         int(loaded[5]),
-                        int(loaded[6]))
+                        int(loaded[6])
+                        )
     else:
         pocket = Wallet(0, 1)
+    create_hero(int(loaded[7]))
     return pocket
 
 
-def create_hero():
+def create_hero(level=1):
     global hero
     hero_name = ""
     hero_pro = ""
@@ -130,16 +136,22 @@ def create_hero():
         if counter > 2:
             print("Cmon already, name him and choose speciality...")
     if hero_pro == hero_types[0]:
-        hero = Pirate(hero_name, rand_i(2 + pocket.global_level, 3 + pocket.global_level),
-                      rand_i(20 + pocket.global_level * 5, 30 + pocket.global_level * 5))
+        hero = Pirate(hero_name, 
+                    rand_i(2 + pocket.global_level, 3 + pocket.global_level) + pocket.upgrades_count*pocket.global_level,
+                    rand_i(20 + pocket.global_level * 5, 30 + pocket.global_level * 5) + pocket.upgrades_count*pocket.global_level*5, 
+                    lvl=level, attack_speed=1.03**level)
     elif hero_pro == hero_types[1]:
-        hero = Archer(hero_name, rand_i(3 + pocket.global_level, 5 + pocket.global_level),
-                      rand_i(15 + pocket.global_level * 5, 25 + pocket.global_level * 5))
+        hero = Archer(hero_name, 
+                    rand_i(3 + pocket.global_level, 5 + pocket.global_level) + pocket.upgrades_count*pocket.global_level,
+                    rand_i(15 + pocket.global_level * 5, 25 + pocket.global_level * 5) + pocket.upgrades_count*pocket.global_level*5, 
+                    lvl=level, attack_speed=1.03**level)
     elif hero_pro == hero_types[2]:
-        hero = Berserk(hero_name, rand_i(4 + pocket.global_level, 5 + pocket.global_level),
-                       rand_i(15 + pocket.global_level * 5, 20 + pocket.global_level * 5))
+        hero = Berserk(hero_name, 
+                    rand_i(4 + pocket.global_level, 5 + pocket.global_level) + pocket.upgrades_count*pocket.global_level,
+                    rand_i(15 + pocket.global_level * 5, 20 + pocket.global_level * 5) + pocket.upgrades_count*pocket.global_level*5, 
+                    lvl=level, attack_speed=1.03**level)
     hero.health = hero.max_health
-    pocket.upgrades_count = 1
+    # pocket.upgrades_count = 1
     show_stats(hero)
     return hero
 
@@ -147,30 +159,31 @@ def create_hero():
 def create_enemy(kills):
     global enemy
     enemy_name = enemy_names[random.randint(0, len(enemy_names) - 1)]
-    if kills % pocket.global_level == 0 and kills > 100:
-        enemy = Zombie("Foreigner " + enemy_name, rand_i(3 * pocket.global_level, 5 * pocket.global_level),
-                       rand_i(20 * pocket.global_level, 40 * pocket.global_level),
-                       money=rand_i(2 * pocket.global_level, 4 * pocket.global_level),
-                       exp=rand_i(3 * pocket.global_level, 6 * pocket.global_level),
-                       lvl=pocket.global_level)
+    if kills % pocket.global_level == 0 and kills != 0:
+        enemy = Zombie("Foreigner " + enemy_name, 
+                        rand_i(3 * pocket.global_level, 5 * pocket.global_level),
+                        rand_i(20 * pocket.global_level, 40 * pocket.global_level),
+                        money=rand_i(2 * pocket.global_level, 4 * pocket.global_level),
+                        exp=rand_i(3 * pocket.global_level, 6 * pocket.global_level),
+                        lvl=pocket.global_level, attack_speed=1.05**pocket.global_level)
         print("FOREIGN Zombie sneaked in")
     elif kills % 10 == 0 and kills != 0:
         enemy = Zombie("FATTY " + enemy_name, rand_i(5, 10), rand_i(40, 80),
-                       money=rand_i(4 + pocket.global_level, 8 + pocket.global_level),
-                       exp=rand_i(6 + pocket.global_level, 12 + pocket.global_level),
-                       lvl=pocket.global_level)
+                        money=rand_i(4 + pocket.global_level, 8 + pocket.global_level),
+                        exp=rand_i(6 + pocket.global_level, 12 + pocket.global_level),
+                        lvl=pocket.global_level, attack_speed=1.05**pocket.global_level)
         print(f"{hero.name} encountered fat zombie")
     elif kills % 50 == 0 and kills != 0:
         enemy = Zombie("BOSS " + enemy_name, rand_i(10, 20), rand_i(80, 160),
                        money=rand_i(8 + pocket.global_level, 16 + pocket.global_level),
                        exp=rand_i(12 + pocket.global_level, 24 + pocket.global_level),
-                       lvl=pocket.global_level)
+                       lvl=pocket.global_level, attack_speed=1.05**pocket.global_level)
         print(f"{hero.name} encountered Boss zombie")
     else:
         enemy = Zombie(enemy_name, rand_i(1, 3), rand_i(10, 20),
                        money=rand_i(1 + pocket.global_level, 2 + pocket.global_level),
                        exp=rand_i(2 + pocket.global_level, 3 + pocket.global_level),
-                       lvl=pocket.global_level)
+                       lvl=pocket.global_level, attack_speed=1.05**pocket.global_level)
     enemy.health = enemy.max_health
     show_stats(enemy)
 
@@ -227,12 +240,19 @@ def attack(kills):
     console_clr()
     enemy_power = enemy.attack + rand_i(-1 + int(kills / 10) + enemy.level, 1 + int(kills / 10) + enemy.level)
     hero.health -= enemy_power
+    time.sleep(1 * pocket.attack_speed / (hero.attack_speed+1))
     print(f"\n{enemy.name} stroke {hero.name} with {enemy_power} leaving {hero.name} with {hero.health} health")
     hit_count = hero.attack_speed/enemy.attack_speed
-    print(int(hit_count), hit_count)
+    # print(hit_count, hero.attack_speed, enemy.attack_speed)
+    if hit_count <= 1:
+        hero_power = hero.attack + rand_i(-1 + pocket.global_level, 1 + pocket.global_level)
+        enemy.health -= hero_power
+        time.sleep(1 * pocket.attack_speed / (hero.attack_speed+1))
+        print(f"{hero.name} stroke {enemy.name} with {hero_power} leaving {enemy.name} with {enemy.health} health")
     for i in range(int(hit_count)):        
         hero_power = hero.attack + rand_i(-1 + pocket.global_level, 1 + pocket.global_level)
         enemy.health -= hero_power
+        time.sleep(1 * pocket.attack_speed / (hero.attack_speed+1))
         print(f"{hero.name} stroke {enemy.name} with {hero_power} leaving {enemy.name} with {enemy.health} health")
     if hero.health <= 0 and enemy.health <= 0:
         hero.speak()
@@ -257,7 +277,7 @@ def auto_attack():
     global money
     while True:
         attack(kills)
-        time.sleep(1 * pocket.attack_speed)
+        time.sleep(1 * pocket.attack_speed / enemy.attack_speed)
         if hero.health == 0:
             print(f"{hero.name} level {hero.level} killed {kills} enemies before vanishing\n \
 and earned you ${hero.money} for upgrades of future heroes")
@@ -274,7 +294,8 @@ and earned you ${hero.money} for upgrades of future heroes")
                 str(pocket.global_level),
                 str(pocket.upgrades_count),
                 str(pocket.speed_count),
-                str(pocket.best_kills)
+                str(pocket.best_kills),
+                str(hero.level) # Not used yet
                 ]
             print("Pocked saved")
             with open("autosave.txt", "w") as save:
@@ -291,12 +312,12 @@ and earned you ${hero.money} for upgrades of future heroes")
             create_enemy(kills)
         if hero.experience >= 10 * hero.level:
             hero_levelup()
-        if pocket.global_exp >= 5 ** pocket.global_level:
+        if pocket.global_exp >= 4 ** pocket.global_level:
             world_levelup()
 
 
 def world_levelup():
-    pocket.global_exp -= 5 ** pocket.global_level
+    pocket.global_exp -= 4 ** pocket.global_level
     pocket.global_level += 1
     print(f"Global level increased to level {pocket.global_level}")
 
@@ -340,7 +361,7 @@ def main():
         "h": help
     }
     create_wallet()
-    create_hero()
+    # create_hero()
     create_enemy(0)
     auto_attack()
 
